@@ -1,0 +1,77 @@
+Layout & Display**********
+
+block: Element ek nayi line occupy karega aur puri width le lega
+inline :Sirf content ke jitni width lega. Same line me multiple elements aa sakte hain.
+inline-block:Inline ki tarah same line me aayega but tu width/height bhi de sakta hai.
+flex: Flexbox activate karta hai, children horizontally (row) arrange hote hain by default
+grid: CSS Grid activate karta hai (row + column system).
+
+
+// 2. Spacing (Margin & Padding)*************
+m-{size} → sab taraf margin
+mx-{size} → left aur right margin
+my-{size} → top aur bottom margin
+mt-{size} → top margin
+mr-{size} → right margin
+mb-{size} → bottom margin
+ml-{size} → left margin
+
+p-{size} → sab taraf padding
+px-{size} → left aur right padding
+py-{size} → top aur bottom padding
+pt-{size} → top padding
+pr-{size} → right padding
+pb-{size} → bottom padding
+pl-{size} → left padding
+
+
+
+
+// 3. Sizing ************
+
+w-full : parent ki 100% width le lega.
+w-screen : pura screen ki width.
+w-1/2, w-1/3, w-2/3, w-1/4 : fraction based width.
+w-0, w-px, w-10, w-20, w-40, w-64 : fixed spacing scale width.
+w-auto : content ke hisaab se width lega.
+
+
+w-full → parent jitna wide.
+w-screen → puri screen jitna wide.
+w-1/2 → parent ka aadha wide.
+h-full → parent jitna tall.
+h-screen → screen jitna tall.
+h-auto → content ke hisaab se tall.
+min-h-screen → at least full screen jitna tall.
+max-w-md / max-w-lg → fixed container width.
+max-w-screen-lg → responsive max width, center aligned layouts me useful.
+
+// 4. Typography **********
+
+
+
+
+// 5. Colors & Background **********
+
+
+
+// 6. Border & Radius ********
+
+
+// 7. Effects ************
+
+
+
+// 8. Responsive Utilities **********
+
+
+
+// 9. Positioning *********
+
+
+
+// 10. Animation & Transition **************
+
+
+
+// 11. Flexbox & Grid ********
