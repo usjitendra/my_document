@@ -1,0 +1,85 @@
+Basic Ubuntu/Debian commands (cd, ls, mkdir, rm, sudo, nano)
+******** cd  *******
+cd .. → ek level peeche jao
+cd / → root directory me jao
+cd ~ → home directory me jao
+
+********* ls ***********
+ls -l → detailed list (permissions, date, size)
+ls -a → hidden files bhi dikha dega
+
+********* mkdir *********
+Ek saath multiple folder bhi:
+mkdir folder1 folder2
+
+********* rm *********
+rm file.txt -> folder delete karne ke liye.
+rm -r foldername -> poora folder + uske andar sab kuch (Recycle Bin me bhi nahi hota)
+
+******** sudo *******
+  sudo apt update ->   System update karega (requires password).
+ 
+ ******* nano ********
+ nano index.js  -> file terminal me open ho jaayegi edit karne ke liye.
+
+File permission (chmod, chown)
+
+============Process management (pm2, kill, top)==========
+1. PM2 (Process Manager 2)
+Ye ek Node.js process manager hai.
+Iska use hum Node.js apps ko continuously chalane, restart karane, aur monitor karne ke liye karte hain.
+
+
+Command	Explanation
+pm2 start app.js  ->	App ko background me start karta hai (terminal band kar do, fir bhi chalega)
+pm2 list ->	👉 Sab running apps dikhata hai
+pm2 stop -> 👉 app_name_or_id	App ko stop karta hai
+pm2 restart -> 👉 app_name_or_id	App ko restart karta hai
+pm2 delete  -> 👉 app_name_or_id	App ko pm2 list se hata deta hai
+pm2 logs ->👉 Logs (console output) dikhata hai
+pm2 save ->👉 Current process list save karta hai reboot ke baad restore ke liye
+pm2 startup ->👉 System start hote hi PM2 apps automatically start ho jayein
+
+
+************ kill ********
+ kill 1234 -> 👉 Process ID (PID) 1234 wala process band ho jayega. Process ID (PID) 1234 wala process band ho jayega.
+kill -9 1234 -> 👉 Ye dangerous hai — force close karta hai bina cleanup ke.
+
+********** top *********
+ top -> 👉 Ye tumhe real-time dikhayega:|
+
+
+
+ name: Node.js CI
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+
+👉 Iska matlab:
+Jab bhi koi main branch pe push karega,
+GitHub automatically ye steps run karega:
+
+Code download karega
+Node install karega
+npm install karega
+npm test run karega
+
