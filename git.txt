@@ -1,0 +1,9 @@
+git branch ->	Saare branches list karta hai.
+git branch <branch_name>	Nayi branch banata hai.
+git checkout <branch_name>	Us branch me switch karta hai.
+git checkout -b <branch_name>	Nayi branch banata hai aur switch bhi karta hai.
+git merge <branch_name>	Kisi branch ke changes current branch me merge karta hai.
+git branch -d <branch_name>	Branch delete karta hai.
+
+git remote add origin <repo_url>	Local repo ko GitHub se connect karta hai.
+git remote -v	Remote repositories list karta hai. 

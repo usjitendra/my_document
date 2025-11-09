@@ -1,0 +1,39 @@
+import axios from 'axios';
+import normalEmail from './normal.email.js';
+import remoteEmail from './remote.job.email.js';
+const baseUrl = 'https://api.ranipadmawatiasm.in/api/v1/email/send-email2';
+// Base URL
+
+// Function to send all emails
+let counted = 0;
+export const sendMial = () => {
+  async function sendEmails() {
+    for (const email of remoteEmail) {
+      counted += 1;
+      const cleanedEmail = email.trim();
+      if (
+        cleanedEmail == 'hr@webbrainstechnologies.com' ||
+        cleanedEmail == 'adesh.mishra@codecrafter.co.in' ||
+        cleanedEmail == 'aksa.nasir@codecrafter.co.in' ||
+        cleanedEmail == 'hr@codecrafter.co.in' ||
+        cleanedEmail == 'codecrafter73@gmail.com' ||
+        cleanedEmail == 'codecraftersmm@gmail.com' ||
+        cleanedEmail == 'annu.upadhyay@codecrafter.co.in'
+      ) {
+        console.log(` Dont send to: ${cleanedEmail} coutnt: ${counted} ❌ `);
+      } else {
+        try {
+          console.log(`Sending to:`);
+          const url = `${baseUrl}/${encodeURIComponent(email)}`;
+          const response = await axios.get(url);
+
+          console.log(`✅ Sent to: ${email} | Status: 200 count: ${counted}`);
+        } catch (error) {
+          console.error(`❌ Failed for: ${email}`, error.message);
+        }
+      }
+    }
+  }
+
+  sendEmails();
+};
