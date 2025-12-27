@@ -1,0 +1,127 @@
+STEP 1: EC2 INSTANCE LAUNCH (AWS)
+
+AWS Console → EC2 → Launch Instance
+
+OS: Ubuntu 22.04
+
+Instance: t2.micro
+
+Key pair: test.pem
+
+Security Group:
+
+SSH  22  0.0.0.0/0
+HTTP 80  0.0.0.0/0
+HTTPS 443 0.0.0.0/0
+
+🔥 STEP 2: LOCAL MACHINE SE EC2 LOGIN
+chmod 400 test.pem
+
+ssh -i test.pem ubuntu@<EC2_PUBLIC_IP>
+
+🔥 STEP 3: EC2 BASIC SETUP
+sudo apt update && sudo apt upgrade -y
+
+sudo apt install -y nginx git curl
+
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+
+👉 Browser me open karo:
+
+http://<EC2_PUBLIC_IP>
+
+🔥 STEP 4: NODE & PM2 INSTALL
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+
+sudo apt install -y nodejs
+
+node -v
+npm -v
+
+sudo npm install -g pm2
+
+🔥 STEP 5: APP DIRECTORY CREATE
+sudo mkdir -p /var/www/app
+
+sudo chown -R ubuntu:ubuntu /var/www/app
+
+cd /var/www/app
+
+🔥 STEP 6: GITHUB REPO CLONE
+git clone https://github.com/<username>/<repo>.git .
+
+npm install
+
+pm2 start index.js --name app
+
+pm2 save
+pm2 startup
+
+🔥 STEP 7: NGINX CONFIG (PORT 3000 → 80)
+sudo nano /etc/nginx/sites-available/default
+
+
+पूरा replace karo:
+
+server {
+    listen 80;
+
+    server_name _;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+sudo nginx -t
+sudo systemctl restart nginx
+
+🔥 STEP 8: GITHUB ACTIONS (CI/CD)
+Repo me file banao:
+.github/workflows/deploy.yml
+
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            set -e
+            cd /var/www/app
+            git pull origin main
+            npm install
+            pm2 restart app || pm2 start index.js --name app
+
+🔥 STEP 9: GITHUB SECRETS ADD
+
+GitHub Repo → Settings → Secrets → Actions
+
+EC2_HOST = <EC2_PUBLIC_IP>
+EC2_KEY  = (test.pem ka full content)
+
+🔥 STEP 10: AUTO DEPLOY TEST
+git add .
+git commit -m "deploy test"
+git push origin main
