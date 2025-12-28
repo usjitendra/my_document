@@ -1,69 +1,60 @@
-STEP 1: EC2 INSTANCE LAUNCH (AWS)
+**********-STEP 1: EC2 INSTANCE LAUNCH (AWS)-*************
 
 AWS Console → EC2 → Launch Instance
-
 OS: Ubuntu 22.04
-
 Instance: t2.micro
-
 Key pair: test.pem
-
 Security Group:
 
 SSH  22  0.0.0.0/0
 HTTP 80  0.0.0.0/0
 HTTPS 443 0.0.0.0/0
 
-🔥 STEP 2: LOCAL MACHINE SE EC2 LOGIN
-chmod 400 test.pem
+********* STEP 2: LOCAL MACHINE SE EC2 LOGIN-********
 
+chmod 400 test.pem
 ssh -i test.pem ubuntu@<EC2_PUBLIC_IP>
 
-🔥 STEP 3: EC2 BASIC SETUP
+***********-STEP 3: EC2 BASIC SETUP-*************
+
 sudo apt update && sudo apt upgrade -y
-
 sudo apt install -y nginx git curl
-
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
-
-👉 Browser me open karo:
-
+Browser me open karo:
 http://<EC2_PUBLIC_IP>
 
-🔥 STEP 4: NODE & PM2 INSTALL
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+**********-STEP 4: NODE & PM2 INSTALL-*************
 
-sudo apt install -y nodejs
-
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+nvm install 20
+nvm use 20
+nvm alias default 20
 node -v
 npm -v
+npm install -g pm2
 
-sudo npm install -g pm2
+**********-STEP 5: APP DIRECTORY CREATE-*************
 
-🔥 STEP 5: APP DIRECTORY CREATE
 sudo mkdir -p /var/www/app
-
 sudo chown -R ubuntu:ubuntu /var/www/app
-
 cd /var/www/app
 
-🔥 STEP 6: GITHUB REPO CLONE
+**********-STEP 6: GITHUB REPO CLONE-**********
+
 git clone https://github.com/<username>/<repo>.git .
-
 npm install
-
+npm install -g pm2
 pm2 start index.js --name app
-
 pm2 save
 pm2 startup
 
-🔥 STEP 7: NGINX CONFIG (PORT 3000 → 80)
+*********-STEP 7: NGINX CONFIG (PORT 3000 → 80)-***********
+
 sudo nano /etc/nginx/sites-available/default
-
-
-पूरा replace karo:
+replace karo:
 
 server {
     listen 80;
@@ -71,7 +62,7 @@ server {
     server_name _;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:5000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -83,7 +74,7 @@ server {
 sudo nginx -t
 sudo systemctl restart nginx
 
-🔥 STEP 8: GITHUB ACTIONS (CI/CD)
+***********-STEP 8: GITHUB ACTIONS (CI/CD)-**********
 Repo me file banao:
 .github/workflows/deploy.yml
 
@@ -92,7 +83,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - maint
 
 jobs:
   deploy:
@@ -109,19 +100,29 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             set -e
-            cd /var/www/app
-            git pull origin main
-            npm install
-            pm2 restart app || pm2 start index.js --name app
 
-🔥 STEP 9: GITHUB SECRETS ADD
+            # ---- LOAD NVM (MOST IMPORTANT) ----
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            # optional safety
+            nvm use 20
+
+            cd /var/www/app
+            git pull origin maint
+            npm install
+
+            pm2 restart app || pm2 start index.js --name app
+            pm2 save
+
+*******-STEP 9: GITHUB SECRETS ADD-*************
 
 GitHub Repo → Settings → Secrets → Actions
 
 EC2_HOST = <EC2_PUBLIC_IP>
 EC2_KEY  = (test.pem ka full content)
 
-🔥 STEP 10: AUTO DEPLOY TEST
+********-STEP 10: AUTO DEPLOY TEST-*************
 git add .
 git commit -m "deploy test"
 git push origin main
